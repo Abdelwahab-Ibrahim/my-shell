@@ -9,6 +9,6 @@ int main() {
   // TODO: Uncomment the code below to pass the first stage
   std::cout << "$ ";
   string command;
-  cin >> command;
+  std::getline(std::cin, command);
   cout << command << ": command not found";
 }
