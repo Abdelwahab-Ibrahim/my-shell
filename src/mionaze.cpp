@@ -1,5 +1,8 @@
 #include <iostream>
 #include <string>
+#include <sstream>   
+
+
 using namespace std;
 int main() {
   // Flush after every std::cout / std:cerr
@@ -13,6 +16,13 @@ int main() {
     std::cout << "$ ";
     string command;
     std::getline(std::cin, command);
-    cout << command << ": command not found"<< endl;
+    if(command == "exit") break;
+    
+    stringstream ss(command);
+    string cmd,argument;
+    ss>> cmd;
+    getline(ss,argument);
+    if(cmd == "echo") cout<< argument<<endl;
+    else cout << cmd << ": command not found"<< endl;
   }
 }
