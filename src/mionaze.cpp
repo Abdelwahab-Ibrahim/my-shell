@@ -43,6 +43,9 @@ int main() {
   std::cerr << std::unitbuf;
   
   bool running = true;
+
+
+    // command registry uomap
     unordered_map<string, function<void(string&)>> commands;
 
     commands["exit"] = [&running](string&) {
@@ -55,11 +58,16 @@ int main() {
     };
 
 
+    commands["type"]=[&](string &CMD){
+      if(commands.count(CMD))
+          cout << GREEN << CMD << RESET<< ": is a "<< GREEN << "built in" << endl;
+      else cout << ERROR << CMD << RESET<< ": is not a "<< ERROR << "built in" << endl;
+    };
 
 
     while (running)
     {
-        cout << "$ ";
+        cout <<WARNING<< "$ "<< MUTED;
 
         string command;
         getline(cin, command);
@@ -68,7 +76,7 @@ int main() {
         auto [cmd ,args] = parseCommand(command);
 
         if (commands.count(cmd)) commands[cmd](args);
-        else cout << ERROR << cmd << ": command not found";
+        else cout << ERROR << cmd << RESET<<": command not found"<< endl;
 
         
     }
