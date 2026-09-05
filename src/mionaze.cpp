@@ -1,8 +1,11 @@
 #include <iostream>
+
 #include <string>
-#include <sstream>
-#include <functional>
+#include <vector>
 #include <unordered_map>
+#include <sstream>
+
+#include <functional>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -19,6 +22,19 @@ using namespace std;
 #define INFO "\033[1;34m"    // calm blue (info output)
 #define MUTED "\033[0;37m"   // dim gray (secondary text)
 
+
+// spilit command
+vector<string> split(const string& str, char delimiter = ' ') {
+    vector<string> result;
+    stringstream ss(str);
+    string part;
+
+    while (std::getline(ss, part, delimiter)) {
+        result.push_back(part);
+    }
+
+    return result;
+}
 // check commands
 string checkCMD(string cmd)
 {
@@ -51,6 +67,10 @@ pair<string, string> parseCommand(const string &input)
   return {cmd, args};
 }
 
+ void run_external(string &path,vector <string> &Args)
+  {
+    cout << GREEN << "exc is running" << RESET << endl;
+  }
 int main()
 {
   // Flush after every std::cout / std::cerr
@@ -93,6 +113,8 @@ int main()
       cout << ERROR << CMD << RESET << ": is not a " << ERROR << "built in" << endl;
   };
 
+ 
+
   while (running)
   {
     cout << WARNING << "$ " << MUTED;
@@ -104,14 +126,17 @@ int main()
 
     if (commands.count(cmd))
       commands[cmd](args);
-    else if (!checkCMD(cmd).empty())
+    else
     {
-
-      system(command.c_str());
+      string path = checkCMD(cmd);
+      if (!path.empty()){
+      vector<string> args = split(command);
+      run_external(path,args);
       std::cout << GREEN << "The command executed successfully!\n";
-    }
+     }
     else
       cout << ERROR << cmd << RESET << ": command not found" << endl;
+    }
   }
 
   return 0;
