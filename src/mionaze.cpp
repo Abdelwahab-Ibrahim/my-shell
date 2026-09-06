@@ -7,6 +7,9 @@
 
 #include <functional>
 #include <unistd.h>
+#include <cstdlib>
+#include <csignal>
+#include <filesystem>
 #include <sys/wait.h>
 #include <sys/types.h>
 using namespace std;
@@ -36,7 +39,7 @@ vector<string> split(const string& str, char delimiter = ' ') {
     return result;
 }
 // check commands
-string checkCMD(string cmd)
+string checkCMD(const string cmd)
 {
   string path_env = getenv("PATH");
   stringstream ss_path(path_env);
@@ -67,9 +70,30 @@ pair<string, string> parseCommand(const string &input)
   return {cmd, args};
 }
 
- void run_external(string &path,vector <string> &Args)
+ void run_external(const string &path,const vector <string> &Args)
   {
-    cout << GREEN << "exc is running" << RESET << endl;
+    pid_t pid= fork();
+    if( pid < 0){
+        perror("fork");
+        return;
+    }
+
+    if(pid == 0){
+        // child
+        signal(SIGINT, SIG_DFL);
+        vector<char*> argv;
+        for(string &arg : Args){
+        argv.push_back(arg.data());
+        }
+        argv.push_back(nullptr);
+        
+        execv(path.c_str() , argv.data());
+        perror("execv");
+        exit(EXIT_FAILURE);
+
+    }
+
+    waitpid(pid, nullptr, 0);
   }
 int main()
 {
@@ -132,7 +156,6 @@ int main()
       if (!path.empty()){
       vector<string> args = split(command);
       run_external(path,args);
-      std::cout << GREEN << "The command executed successfully!\n";
      }
     else
       cout << ERROR << cmd << RESET << ": command not found" << endl;
