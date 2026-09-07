@@ -24,6 +24,15 @@ using namespace std;
 #define INFO    "\033[1;34m"
 #define MUTED   "\033[0;37m"
 
+// Check if a command is a builtin
+bool isBuiltin(const string& cmd)
+{
+    return cmd == "exit"
+        || cmd == "echo"
+        || cmd == "type"
+        || cmd == "pwd";
+}
+
 
 // Split command into arguments
 vector<string> split(const string& str, char delimiter = ' ')
@@ -129,14 +138,7 @@ void typeCommand(const string& cmd)
 }
 
 
-// Check if a command is a builtin
-bool isBuiltin(const string& cmd)
-{
-    return cmd == "exit"
-        || cmd == "echo"
-        || cmd == "type"
-        || cmd == "pwd";
-}
+
 
 
 
