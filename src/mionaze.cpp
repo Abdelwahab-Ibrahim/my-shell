@@ -1,166 +1,200 @@
+```cpp
 #include <iostream>
-
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <sstream>
 
-#include <functional>
 #include <unistd.h>
 #include <cstdlib>
 #include <csignal>
 #include <filesystem>
 #include <sys/wait.h>
 #include <sys/types.h>
+
+
+#include "executor.h"
 using namespace std;
 
-#define GREEN "\033[1;32m"
-#define RED "\033[1;31m"
-#define RESET "\033[0m"
+#define GREEN   "\033[1;32m"
+#define RESET   "\033[0m"
 
-#define PRIMARY "\033[1;36m" // soft cyan (commands / shell name)
-#define SUCCESS "\033[1;32m" // muted green (success output)
-#define WARNING "\033[1;33m" // warm amber (warnings)
-#define ERROR "\033[1;31m"   // soft red (errors)
-#define INFO "\033[1;34m"    // calm blue (info output)
-#define MUTED "\033[0;37m"   // dim gray (secondary text)
+#define PRIMARY "\033[1;36m"
+#define SUCCESS "\033[1;32m"
+#define WARNING "\033[1;33m"
+#define ERROR   "\033[1;31m"
+#define INFO    "\033[1;34m"
+#define MUTED   "\033[0;37m"
 
 
-// spilit command
-vector<string> split(const string& str, char delimiter = ' ') {
+// Split command into arguments
+vector<string> split(const string& str, char delimiter = ' ')
+{
     vector<string> result;
     stringstream ss(str);
     string part;
 
-    while (std::getline(ss, part, delimiter)) {
-        result.push_back(part);
+    while (getline(ss, part, delimiter))
+    {
+        if (!part.empty())
+            result.push_back(part);
     }
 
     return result;
 }
-// check commands
-string checkCMD(const string cmd)
+
+
+// Check if external command exists in PATH
+string checkCMD(const string& cmd)
 {
-  string path_env = getenv("PATH");
-  stringstream ss_path(path_env);
-  string path;
-  while (getline(ss_path, path, ':'))
-  {
-    string full_path = path + '/' + cmd;
-    if (access(full_path.c_str(), X_OK) == 0)
+    const char* path_env = getenv("PATH");
+
+    if (!path_env)
+        return "";
+
+    stringstream ss_path(path_env);
+    string path;
+
+    while (getline(ss_path, path, ':'))
     {
-      return full_path;
+        string full_path = path + '/' + cmd;
+
+        if (access(full_path.c_str(), X_OK) == 0)
+            return full_path;
     }
-  }
-  return "";
+
+    return "";
 }
 
-pair<string, string> parseCommand(const string &input)
+
+// Parse command into command + arguments
+pair<string, string> parseCommand(const string& input)
 {
-  stringstream ss(input);
-  string cmd, args;
+    stringstream ss(input);
 
-  ss >> cmd;
-  getline(ss, args);
+    string cmd;
+    string args;
 
-  // remove leading space
-  if (!args.empty() && args[0] == ' ')
-    args.erase(0, 1);
+    ss >> cmd;
+    getline(ss, args);
 
-  return {cmd, args};
+    // Remove leading space
+    if (!args.empty() && args[0] == ' ')
+        args.erase(0, 1);
+
+    return {cmd, args};
 }
 
- void run_external(const string &path,const vector <string> &Args)
-  {
-    pid_t pid= fork();
-    if( pid < 0){
-        perror("fork");
+
+// Built-in: exit
+void exitCommand(bool& running)
+{
+    running = false;
+}
+
+
+// Built-in: echo
+void echoCommand(const string& args)
+{
+    cout << GREEN << args << RESET << endl;
+}
+
+
+// Built-in: type
+void typeCommand(const string& cmd)
+{
+    if (isBuiltin(cmd))
+    {
+        cout << GREEN << cmd << RESET
+             << ": is a " << GREEN << "builtin" << RESET << endl;
+
         return;
     }
 
-    if(pid == 0){
-        // child
-        signal(SIGINT, SIG_DFL);
-        vector<char*> argv;
-        for(string &arg : Args){
-        argv.push_back(arg.data());
-        }
-        argv.push_back(nullptr);
-        
-        execv(path.c_str() , argv.data());
-        perror("execv");
-        exit(EXIT_FAILURE);
+    string full_path = checkCMD(cmd);
 
+    if (!full_path.empty())
+    {
+        cout << GREEN << cmd << RESET
+             << " is " << GREEN << full_path << RESET << endl;
+
+        return;
     }
 
-    waitpid(pid, nullptr, 0);
-  }
+    cout << ERROR << cmd << RESET
+         << ": command not found" << endl;
+}
+
+
+// Check if a command is a builtin
+bool isBuiltin(const string& cmd)
+{
+    return cmd == "exit"
+        || cmd == "echo"
+        || cmd == "type";
+}
+
+
+
+
+
+// Execute builtin command
+void executeBuiltin(const string& cmd, const string& args, bool& running)
+{
+    if (cmd == "exit")
+    {
+        exitCommand(running);
+    }
+    else if (cmd == "echo")
+    {
+        echoCommand(args);
+    }
+    else if (cmd == "type")
+    {
+        typeCommand(args);
+    }
+}
+
+
 int main()
 {
-  // Flush after every std::cout / std::cerr
-  std::cout << std::unitbuf;
-  std::cerr << std::unitbuf;
+    cout << unitbuf;
+    cerr << unitbuf;
 
-  bool running = true;
+    bool running = true;
 
-  // command registry uomap
-  unordered_map<string, function<void(string &)>> commands;
-
-  commands["exit"] = [&running](string &)
-  {
-    running = false;
-  };
-
-  commands["echo"] = [](string &Args)
-  {
-    cout << GREEN << Args << RESET << endl;
-  };
-
-  commands["type"] = [&](string &CMD)
-  {
-    bool found = false;
-    if (commands.count(CMD))
+    while (running)
     {
-      cout << GREEN << CMD << RESET << ": is a " << GREEN << "built in" << endl;
-      found = true;
+        cout << WARNING << "$ " << MUTED;
+
+        string command;
+        getline(cin, command);
+
+        auto [cmd, args] = parseCommand(command);
+
+        if (cmd.empty())
+            continue;
+
+        if (isBuiltin(cmd))
+        {
+            executeBuiltin(cmd, args, running);
+        }
+        else
+        {
+            string path = checkCMD(cmd);
+
+            if (!path.empty())
+            {
+                vector<string> argv = split(command);
+                run_external(path, argv);
+            }
+            else
+            {
+                cout << ERROR << cmd << RESET
+                     << ": command not found" << endl;
+            }
+        }
     }
-    if (!found)
-    {
-      string full_path = checkCMD(CMD);
-      if (!full_path.empty())
-      {
-        cout << GREEN << CMD << RESET << " is " << GREEN << full_path << endl;
-        found = true;
-      }
-    }
-    if (!found)
-      cout << ERROR << CMD << RESET << ": is not a " << ERROR << "built in" << endl;
-  };
 
- 
-
-  while (running)
-  {
-    cout << WARNING << "$ " << MUTED;
-
-    string command;
-    getline(cin, command);
-
-    auto [cmd, args] = parseCommand(command);
-
-    if (commands.count(cmd))
-      commands[cmd](args);
-    else
-    {
-      string path = checkCMD(cmd);
-      if (!path.empty()){
-      vector<string> args = split(command);
-      run_external(path,args);
-     }
-    else
-      cout << ERROR << cmd << RESET << ": command not found" << endl;
-    }
-  }
-
-  return 0;
+    return 0;
 }
+```
