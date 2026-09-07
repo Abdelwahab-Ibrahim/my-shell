@@ -97,6 +97,11 @@ void echoCommand(const string& args)
     cout << GREEN << args << RESET << endl;
 }
 
+// Built-in: pwd
+void pwdCommand()
+{
+    cout << GREEN << filesystem::current_path().string() << RESET << endl;
+}
 
 // Built-in: type
 void typeCommand(const string& cmd)
@@ -129,7 +134,8 @@ bool isBuiltin(const string& cmd)
 {
     return cmd == "exit"
         || cmd == "echo"
-        || cmd == "type";
+        || cmd == "type"
+        || cmd == "pwd";
 }
 
 
@@ -150,6 +156,10 @@ void executeBuiltin(const string& cmd, const string& args, bool& running)
     else if (cmd == "type")
     {
         typeCommand(args);
+    }
+    else if (cmd == "pwd")
+    {
+        pwdCommand();
     }
 }
 
