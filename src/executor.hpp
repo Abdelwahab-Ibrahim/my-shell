@@ -4,6 +4,6 @@
 #include <string>
 #include <vector>
 
-void run_external(const std::string& path, string &args);
+void run_external(const std::string& path, std::string &args);
 
 #endif
