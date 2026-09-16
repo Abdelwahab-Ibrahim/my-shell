@@ -113,7 +113,7 @@ void cdCommand(const string &path = "")
     }
     catch (const filesystem::filesystem_error &e)
     {
-        cout << ERROR << e.what() << RESET << endl;
+        cout << ERROR << "cd: "<<path<<": No such file or directory" << RESET << endl;
     }
 }
 
