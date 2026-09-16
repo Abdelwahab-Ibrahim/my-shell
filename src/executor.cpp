@@ -26,13 +26,10 @@ void run_external(const std::string &path, std::string &args)
 
         vector<Token> tokens = tokenize(args);
 
-        for (auto it = tokens.begin(); it != tokens.end(); it++)
+        for (auto &token : tokens)
         {
-            string arg = it->value;
-            if (it->type == TokenType::WORD)
-            {
-                argv.push_back(const_cast<char *>(arg.c_str()));
-            }
+            if (token.type == TokenType::WORD)
+                argv.push_back(const_cast<char *>(token.value.c_str()));
         }
 
         argv.push_back(nullptr);
