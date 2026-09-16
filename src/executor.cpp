@@ -49,7 +49,7 @@ void run_external(const std::string &command)
             if (path.empty())
                 return;
         }
-        cout << ERROR << path << RESET << endl;
+        cout << ERROR <<"this is path "<< path << RESET << endl;
         execv(path.c_str(), argv.data());
 
         perror("execv");
