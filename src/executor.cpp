@@ -44,7 +44,7 @@ void run_external(const std::string &command)
 
         if (path.empty())
         {
-            cout << argv[0] << ERROR << " : command not found " << RESET << endl;
+            cout << argv[0] << ERROR << ": command not found" << RESET << endl;
             exit(EXIT_FAILURE);
         }
 
