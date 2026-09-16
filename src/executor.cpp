@@ -37,8 +37,8 @@ void run_external(const std::string &command)
         }
 
         argv.push_back(nullptr);
-        // for (auto &it : argv)
-        //     cout << ERROR << it << RESET << endl;
+        for (auto &it : argv)
+            cout << ERROR << it << RESET << endl;
 
         string path = argv[0];
 
