@@ -55,6 +55,8 @@ void echoCommand(const string &args)
         if (it->type == TokenType::WORD)
         {
             content += it->value;
+            if(it != (tokens.end()-1))
+                content += ' ';
         }
         // else if (it->type == TokenType::STD_OUT)
         // {

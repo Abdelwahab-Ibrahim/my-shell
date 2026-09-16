@@ -1,0 +1,2 @@
+g++ main.cpp lexer.cpp executor.cpp utils
+.cpp builtins.cpp style.cpp -o main
