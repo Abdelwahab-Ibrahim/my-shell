@@ -80,7 +80,7 @@ void echoCommand(const string &args)
     // }else{
         cout << GREEN << content << endl;
     // }
-    cout << args << endl;
+    
 }
 
 // Built-in: pwd
