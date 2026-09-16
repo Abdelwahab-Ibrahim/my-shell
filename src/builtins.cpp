@@ -2,7 +2,7 @@
 #include "utils.hpp"
 #include "style.cpp"
 
-#include<fstream>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -67,7 +67,7 @@ void echoCommand(const string &args)
     //         }
     //         else
     //         {
-                
+
     //             file.open(filename, ios::out);
 
     //         }
@@ -80,7 +80,7 @@ void echoCommand(const string &args)
     // }else{
     //     cout << GREEN << content << endl;
     // }
-    cout << args;
+    cout << args << endl;
 }
 
 // Built-in: pwd
