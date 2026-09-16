@@ -34,7 +34,7 @@ void typeCommand(const string &cmd)
     }
 
     cout << ERROR << cmd << RESET
-         << ": command not found" << endl;
+         << ": not found" << endl;
 }
 
 // Built-in: exit
