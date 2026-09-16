@@ -3,7 +3,7 @@
 
 #include "builtins.hpp"
 #include "utils.hpp"
-#include "style.cpp" 
+#include "style.cpp"
 #include "executor.hpp"
 
 using namespace std;
@@ -32,15 +32,7 @@ int main()
     }
     else
     {
-      string path = checkCMD(cmd);
-
-      if (!path.empty())
-      {
-        
-        run_external(command);
-      }
-      else
-        cout << command << ": command not found" << endl;
+      run_external(command);
     }
   }
 }
