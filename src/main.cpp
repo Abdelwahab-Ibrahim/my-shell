@@ -3,7 +3,9 @@
 
 #include "builtins.hpp"
 #include "utils.hpp"
-#include "style.cpp"
+#include "style.cpp" 
+#include "executor.hpp"
+
 using namespace std;
 int main()
 {
@@ -29,6 +31,16 @@ int main()
       executeBuiltin(cmd, args, running);
     }
     else
-      cout << command << ": command not found" << endl;
+    {
+      string path = checkCMD(cmd);
+
+      if (!path.empty())
+      {
+        vector<string> argv = split(command);
+        run_external(path, argv);
+      }
+      else
+        cout << command << ": command not found" << endl;
+    }
   }
 }
