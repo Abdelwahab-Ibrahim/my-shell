@@ -40,11 +40,14 @@ void run_external(const std::string &command)
         // for (auto &it : argv)
         //     cout << ERROR << it << RESET << endl;
 
-        string path = checkCMD(argv[0]);
+        string path = argv[0];
 
-        if (path.empty())
+        if (command.find('/') == std::string::npos)
         {
-            return;
+            path = checkCMD(argv[0]);
+
+            if (path.empty())
+                return;
         }
 
         execv(path.c_str(), argv.data());
