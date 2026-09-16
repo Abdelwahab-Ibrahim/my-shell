@@ -48,7 +48,7 @@ void run_external(const std::string &command)
 
             if (path.empty()){
                 cout << ERROR << "path not found " << RESET << endl;
-                return;
+                exit(EXIT_FAILURE);
             }
         }
         cout << ERROR <<"this is path "<< path << RESET << endl;
