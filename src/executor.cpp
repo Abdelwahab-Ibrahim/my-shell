@@ -1,14 +1,16 @@
 #include "executor.hpp"
 #include "lexer.hpp"
-
+#include "utils.hpp"
+#include "style.cpp"
 #include <iostream>
 #include <unistd.h>
 #include <csignal>
 #include <cstdlib>
 #include <sys/wait.h>
 
-void run_external(const std::string &path, std::string &args)
+void run_external(const std::string &command)
 {
+
     pid_t pid = fork();
 
     if (pid < 0)
@@ -24,7 +26,7 @@ void run_external(const std::string &path, std::string &args)
 
         std::vector<char *> argv;
 
-        vector<Token> tokens = tokenize(args);
+        vector<Token> tokens = tokenize(command);
 
         for (auto it = tokens.begin(); it != tokens.end(); it++)
         {
@@ -35,6 +37,14 @@ void run_external(const std::string &path, std::string &args)
         }
 
         argv.push_back(nullptr);
+        
+
+        string path = checkCMD(argv[0]);
+
+        if (path.empty())
+        {
+            return;
+        }
 
         execv(path.c_str(), argv.data());
 

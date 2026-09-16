@@ -37,7 +37,7 @@ int main()
       if (!path.empty())
       {
         
-        run_external(path, args);
+        run_external(command);
       }
       else
         cout << command << ": command not found" << endl;
