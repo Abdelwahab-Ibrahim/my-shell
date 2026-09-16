@@ -1,4 +1,5 @@
 #include "executor.hpp"
+#include "lexer.hpp"
 
 #include <iostream>
 #include <unistd.h>
@@ -6,7 +7,7 @@
 #include <cstdlib>
 #include <sys/wait.h>
 
-void run_external(const std::string& path, const std::vector<std::string>& args)
+void run_external(const std::string &path, std::string &args)
 {
     pid_t pid = fork();
 
@@ -21,11 +22,17 @@ void run_external(const std::string& path, const std::vector<std::string>& args)
         // Child process
         signal(SIGINT, SIG_DFL);
 
-        std::vector<char*> argv;
+        std::vector<char *> argv;
 
-        for (const std::string& arg : args)
+        vector<Token> tokens = tokenize(args);
+
+        for (auto it = tokens.begin(); it != tokens.end(); it++)
         {
-            argv.push_back(const_cast<char*>(arg.c_str()));
+            string arg = it->value;
+            if (it->type == TokenType::WORD)
+            {
+                argv.push_back(const_cast<char *>(arg.c_str()));
+            }
         }
 
         argv.push_back(nullptr);

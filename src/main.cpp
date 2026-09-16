@@ -36,8 +36,8 @@ int main()
 
       if (!path.empty())
       {
-        vector<string> argv = split(command);
-        run_external(path, argv);
+        
+        run_external(path, args);
       }
       else
         cout << command << ": command not found" << endl;
