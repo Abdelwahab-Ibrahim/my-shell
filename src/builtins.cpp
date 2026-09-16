@@ -18,7 +18,7 @@ void typeCommand(const string &cmd)
     if (isBuiltin(cmd))
     {
         cout << GREEN << cmd << RESET
-             << ": is a " << GREEN << "builtin" << RESET << endl;
+             << " is a " << GREEN << "shell builtin" << RESET << endl;
 
         return;
     }
