@@ -1,5 +1,9 @@
 #include <iostream>
 #include <string>
+
+#include "builtins.hpp"
+#include "utils.hpp"
+#include "style.cpp"
 using namespace std;
 int main() {
   // Flush after every std::cout / std:cerr
@@ -8,11 +12,21 @@ int main() {
 
   // TODO: Uncomment the code below to pass the first stage
   // the loop
-  while (true)
+  bool running = true;
+  while (running)
   { 
     std::cout << "$ ";
     string command;
     std::getline(std::cin, command);
-    cout << command << ": command not found"<< endl;
+    auto [cmd, args] = parseCommand(command);
+
+    if (cmd.empty())
+      continue;
+
+    if (isBuiltin(cmd))
+    {
+      executeBuiltin(cmd, args, running);
+    }
+    cout << command << ": command not found" << endl;
   }
 }
