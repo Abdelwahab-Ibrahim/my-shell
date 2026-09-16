@@ -5,7 +5,8 @@
 #include "utils.hpp"
 #include "style.cpp"
 using namespace std;
-int main() {
+int main()
+{
   // Flush after every std::cout / std:cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
@@ -14,7 +15,7 @@ int main() {
   // the loop
   bool running = true;
   while (running)
-  { 
+  {
     std::cout << "$ ";
     string command;
     std::getline(std::cin, command);
@@ -27,6 +28,7 @@ int main() {
     {
       executeBuiltin(cmd, args, running);
     }
-    cout << command << ": command not found" << endl;
+    else
+      cout << command << ": command not found" << endl;
   }
 }
