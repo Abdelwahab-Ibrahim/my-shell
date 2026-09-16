@@ -37,21 +37,16 @@ void run_external(const std::string &command)
         }
 
         argv.push_back(nullptr);
-        for (auto &it : argv)
-            cout << ERROR << it << RESET << endl;
+        // for (auto &it : argv)
+        //     cout << ERROR << it << RESET << endl;
 
-        string path = argv[0];
+        string path = checkCMD(argv[0]);
 
-        if (command.find('/') == std::string::npos)
+        if (path.empty())
         {
-            path = checkCMD(argv[0]);
-
-            if (path.empty()){
-                cout << ERROR << "path not found " << RESET << endl;
-                exit(EXIT_FAILURE);
-            }
+            exit(EXIT_FAILURE);
         }
-        cout << ERROR <<"this is path "<< path << RESET << endl;
+
         execv(path.c_str(), argv.data());
 
         perror("execv");
