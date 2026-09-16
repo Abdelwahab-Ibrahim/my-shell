@@ -1,7 +1,7 @@
 #include "builtins.hpp"
 #include "utils.hpp"
 #include "style.cpp"
-
+#include "lexer.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -46,39 +46,39 @@ void exitCommand(bool &running)
 // Built-in: echo
 void echoCommand(const string &args)
 {
-    // vector<Token> tokens = tokenize(args);
-    // string content = "";
+    vector<Token> tokens = tokenize(args);
+    string content = "";
 
     // fstream file;
-    // for (auto it = tokens.begin(); it != tokens.end(); it++)
-    // {
-    //     if (it->type == TokenType::WORD)
-    //     {
-    //         content += it->value;
-    //     }
-    //     else if (it->type == TokenType::STD_OUT)
-    //     {
-    //         string filename = it->value;
-    //         if (filename.empty())
-    //         {
-    //             cout << ERROR << "ERROR: " << RESET
-    //                  << "Expected file name after '>'" << endl;
-    //             return;
-    //         }
-    //         else
-    //         {
+    for (auto it = tokens.begin(); it != tokens.end(); it++)
+    {
+        if (it->type == TokenType::WORD)
+        {
+            content += it->value;
+        }
+        // else if (it->type == TokenType::STD_OUT)
+        // {
+        //     string filename = it->value;
+        //     if (filename.empty())
+        //     {
+        //         cout << ERROR << "ERROR: " << RESET
+        //              << "Expected file name after '>'" << endl;
+        //         return;
+        //     }
+        //     else
+        //     {
 
-    //             file.open(filename, ios::out);
+        //         file.open(filename, ios::out);
 
-    //         }
-    //     }
-    // }
+        //     }
+        // }
+    }
 
     // if(file.is_open()){
     //     file << content;
     //     file.close();
     // }else{
-    //     cout << GREEN << content << endl;
+        cout << GREEN << content << endl;
     // }
     cout << args << endl;
 }
@@ -113,7 +113,7 @@ void cdCommand(const string &path = "")
     }
     catch (const filesystem::filesystem_error &e)
     {
-        cout << ERROR << "cd: "<<path<<": No such file or directory" << RESET << endl;
+        cout << ERROR << "cd: " << path << ": No such file or directory" << RESET << endl;
     }
 }
 
