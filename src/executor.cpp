@@ -46,8 +46,10 @@ void run_external(const std::string &command)
         {
             path = checkCMD(argv[0]);
 
-            if (path.empty())
+            if (path.empty()){
+                cout << ERROR << "path not found " << RESET << endl;
                 return;
+            }
         }
         cout << ERROR <<"this is path "<< path << RESET << endl;
         execv(path.c_str(), argv.data());
