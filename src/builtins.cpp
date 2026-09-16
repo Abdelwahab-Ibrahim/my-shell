@@ -1,9 +1,7 @@
-#include "builtins.hpp"
-#include "lexer.hpp"
-#include "utils.hpp"
+#include "builtins.h"
+#include "utils.h"
 #include "style.cpp"
 
-#include<fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -47,40 +45,7 @@ void exitCommand(bool &running)
 // Built-in: echo
 void echoCommand(const string &args)
 {
-    vector<Token> tokens = tokenize(args);
-    string content = "";
-
-    fstream file;
-    for (auto it = tokens.begin(); it != tokens.end(); it++)
-    {
-        if (it->type == TokenType::WORD)
-        {
-            content += it->value;
-        }
-        else if (it->type == TokenType::STD_OUT)
-        {
-            string filename = it->value;
-            if (filename.empty())
-            {
-                cout << ERROR << "ERROR: " << RESET
-                     << "Expected file name after '>'" << endl;
-                return;
-            }
-            else
-            {
-                
-                file.open(filename, ios::out);
-
-            }
-        }
-    }
-
-    if(file.is_open()){
-        file << content;
-        file.close();
-    }else{
-        cout << GREEN << content << endl;
-    }
+    cout << GREEN << args << RESET << endl;
 }
 
 // Built-in: pwd
@@ -103,10 +68,9 @@ void cdCommand(const string &path = "")
         {
             filesystem::path target = filesystem::path(getenv("HOME")) / path.substr(2);
             filesystem::current_path(target);
-        }
-        else
-        {
+        }else {
 
+            
             filesystem::path target = filesystem::absolute(path);
             filesystem::current_path(target);
         }

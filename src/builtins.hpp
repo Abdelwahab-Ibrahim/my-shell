@@ -1,5 +1,5 @@
-#ifndef BUILTINS_HPP
-#define BUILTINS_HPP
+#ifndef BUILTINS_H
+#define BUILTINS_H
 
 #include <string>
 using namespace std;
