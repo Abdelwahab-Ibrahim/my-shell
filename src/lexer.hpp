@@ -21,6 +21,7 @@ enum class TokenType
     STD_OUT_APPEND,
     STD_ERR,
     STD_ERR_APPEND,
+    PIPE,
     EOL
 };
 

@@ -48,6 +48,17 @@ vector<Token> tokenize(const string &cmd)
             {
                 state = State::EscapedOut;
             }
+            else if (ch == '|')
+            {
+                if (!cur.empty())
+                {
+                    push_token(curr_token, cur, out);
+                }
+
+                curr_token.type = TokenType::PIPE;
+                cur = "|";
+                push_token(curr_token, cur, out);
+            }
             else if (ch == '>' || (ch == '2' && next_ch == '>') || (ch == '1' && next_ch == '>'))
             {
                 state = State::Redirect;

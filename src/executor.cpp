@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <sys/wait.h>
 
-void run_external(const std::string &command)
+void run_external(vector<Token> &tokens)
 {
 
     pid_t pid = fork();
@@ -30,7 +30,7 @@ void run_external(const std::string &command)
 
         int saved_stdout;
         int saved_stderr;
-        vector<Token> tokens = tokenize(command);
+        
         // for (const auto &token : tokens)
         // {
         //     cout << "TYPE: " << static_cast<int>(token.type)

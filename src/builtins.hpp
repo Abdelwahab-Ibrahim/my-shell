@@ -1,10 +1,13 @@
 #ifndef BUILTINS_HPP
 #define BUILTINS_HPP
 
+#include "lexer.hpp"
+
 #include <string>
+#include <vector>
 using namespace std;
 
-void executeBuiltin(const string &cmd, const string &args, bool &running);
+void execute_cmd(const vector<Token> &tokens, bool &running);
 
 bool isBuiltin(const string &cmd);
 

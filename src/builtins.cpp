@@ -3,6 +3,7 @@
 #include "lexer.hpp"
 #include "redirection.hpp"
 #include "style.cpp"
+#include "executor.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -15,28 +16,35 @@
 using namespace std;
 
 // Built-in: type
-void typeCommand(const string &cmd)
+void typeCommand(const vector<Token> &tokens)
 {
-    if (isBuiltin(cmd))
+    for (size_t i = 1; i < tokens.size(); i++)
     {
-        cout << GREEN << cmd << RESET
-             << " is a " << GREEN << "shell builtin" << RESET << endl;
+        if (tokens[i].type != TokenType::WORD)
+            continue;
 
-        return;
+        const string &cmd = tokens[i].value;
+        if (isBuiltin(cmd))
+        {
+            cout << GREEN << cmd << RESET
+                 << " is a " << GREEN << "shell builtin" << RESET << endl;
+
+            continue;
+        }
+
+        string full_path = checkCMD(cmd);
+
+        if (!full_path.empty())
+        {
+            cout << GREEN << cmd << RESET
+                 << " is " << GREEN << full_path << RESET << endl;
+
+            continue;
+        }
+
+        cout << ERROR << cmd << RESET
+             << ": not found" << endl;
     }
-
-    string full_path = checkCMD(cmd);
-
-    if (!full_path.empty())
-    {
-        cout << GREEN << cmd << RESET
-             << " is " << GREEN << full_path << RESET << endl;
-
-        return;
-    }
-
-    cout << ERROR << cmd << RESET
-         << ": not found" << endl;
 }
 
 // Built-in: exit
@@ -46,22 +54,23 @@ void exitCommand(bool &running)
 }
 
 // Built-in: echo
-void echoCommand(const string &args)
+void echoCommand(const vector<Token> &tokens)
 {
-    vector<Token> tokens = tokenize(args);
     string content = "";
 
-    for (auto it = tokens.begin(); it != tokens.end(); it++)
+    bool first = true;
+    for (size_t i = 1; i < tokens.size(); i++)
     {
-        if (it->type == TokenType::WORD)
+        if (tokens[i].type == TokenType::WORD)
         {
-            content += it->value;
-            if (it != (tokens.end() - 1))
+            if (!first)
                 content += ' ';
+            content += tokens[i].value;
+            first = false;
         }
     }
 
-    cout <<content << endl;
+    cout << content << endl;
 }
 
 // Built-in: pwd
@@ -71,8 +80,17 @@ void pwdCommand()
 }
 
 // Built-in: cd
-void cdCommand(const string &path = "")
+void cdCommand(const vector<Token> &tokens)
 {
+    string path;
+    for (size_t i = 1; i < tokens.size(); i++)
+    {
+        if (tokens[i].type == TokenType::WORD)
+        {
+            path = tokens[i].value;
+            break;
+        }
+    }
 
     try
     {
@@ -105,11 +123,14 @@ bool isBuiltin(const string &cmd)
 }
 
 // Execute builtin command
-void executeBuiltin(const string &cmd, const string &args, bool &running)
+void execute_cmd(const vector<Token> &tokens, bool &running)
 {
     int saved_stdout;
     int saved_stderr;
-    vector<Token> tokens = tokenize(args);
+    if (tokens.empty() || tokens[0].type != TokenType::WORD)
+        return;
+
+    string cmd = tokens[0].value;
     if (!applyRedirections(tokens, saved_stdout, saved_stderr))
         return;
 
@@ -119,11 +140,11 @@ void executeBuiltin(const string &cmd, const string &args, bool &running)
     }
     else if (cmd == "echo")
     {
-        echoCommand(args);
+        echoCommand(tokens);
     }
     else if (cmd == "type")
     {
-        typeCommand(args);
+        typeCommand(tokens);
     }
     else if (cmd == "pwd")
     {
@@ -131,7 +152,11 @@ void executeBuiltin(const string &cmd, const string &args, bool &running)
     }
     else if (cmd == "cd")
     {
-        cdCommand(args);
+        cdCommand(tokens);
+    }
+    else
+    {
+        run_external(tokens);
     }
 
     restoreRedirections(saved_stdout, saved_stderr);

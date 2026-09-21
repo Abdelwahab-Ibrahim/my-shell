@@ -5,6 +5,7 @@
 #include "utils.hpp"
 #include "style.cpp"
 #include "executor.hpp"
+#include "lexer.hpp"
 
 using namespace std;
 int main()
@@ -13,26 +14,17 @@ int main()
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
-  // TODO: Uncomment the code below to pass the first stage
-  // the loop
+
   bool running = true;
   while (running)
   {
     std::cout << "$ ";
     string command;
     std::getline(std::cin, command);
-    auto [cmd, args] = parseCommand(command);
-
-    if (cmd.empty())
+    vector<Token> tokens = tokenize(command);
+    if (tokens.empty() || tokens[0].type != TokenType::WORD)
       continue;
 
-    if (isBuiltin(cmd))
-    {
-      executeBuiltin(cmd, args, running);
-    }
-    else
-    {
-      run_external(command);
-    }
+    execute_cmd(tokens, running);
   }
 }

@@ -1,0 +1,3 @@
+g++ main.cpp lexer.cpp executor.cpp utils.cpp builtins.cpp style.cpp redirection.cpp -o main
+
+
