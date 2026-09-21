@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include"lexer.hpp"
 using namespace std;
 
 pair<string, string> parseCommand(const string &input);
