@@ -1,7 +1,9 @@
 #include "builtins.hpp"
 #include "utils.hpp"
-#include "style.cpp"
 #include "lexer.hpp"
+#include "redirection.hpp"
+#include "style.cpp"
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -49,40 +51,17 @@ void echoCommand(const string &args)
     vector<Token> tokens = tokenize(args);
     string content = "";
 
-    // fstream file;
     for (auto it = tokens.begin(); it != tokens.end(); it++)
     {
         if (it->type == TokenType::WORD)
         {
             content += it->value;
-            if(it != (tokens.end()-1))
+            if (it != (tokens.end() - 1))
                 content += ' ';
         }
-        // else if (it->type == TokenType::STD_OUT)
-        // {
-        //     string filename = it->value;
-        //     if (filename.empty())
-        //     {
-        //         cout << ERROR << "ERROR: " << RESET
-        //              << "Expected file name after '>'" << endl;
-        //         return;
-        //     }
-        //     else
-        //     {
-
-        //         file.open(filename, ios::out);
-
-        //     }
-        // }
     }
 
-    // if(file.is_open()){
-    //     file << content;
-    //     file.close();
-    // }else{
-        cout << GREEN << content << endl;
-    // }
-    
+    cout << GREEN << content << endl;
 }
 
 // Built-in: pwd
@@ -128,6 +107,12 @@ bool isBuiltin(const string &cmd)
 // Execute builtin command
 void executeBuiltin(const string &cmd, const string &args, bool &running)
 {
+    int saved_stdout;
+    int saved_stderr;
+    vector<Token> tokens = tokenize(args);
+    if (!applyRedirections(tokens, saved_stdout, saved_stderr))
+        return;
+
     if (cmd == "exit")
     {
         exitCommand(running);
@@ -148,4 +133,6 @@ void executeBuiltin(const string &cmd, const string &args, bool &running)
     {
         cdCommand(args);
     }
+
+    restoreRedirections(saved_stdout, saved_stderr);
 }

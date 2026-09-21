@@ -48,7 +48,7 @@ vector<Token> tokenize(const string &cmd)
             {
                 state = State::EscapedOut;
             }
-            else if (ch == '>' || (ch == '2' && next_ch == '>'))
+            else if (ch == '>' || (ch == '2' && next_ch == '>') || (ch == '1' && next_ch == '>'))
             {
                 state = State::Redirect;
                 i--;
@@ -120,6 +120,11 @@ vector<Token> tokenize(const string &cmd)
             else if (ch == '>')
             {
                 curr_token.type = TokenType::STD_OUT;
+            }
+            else if (ch == '1' && next_ch == '>')
+            {
+                curr_token.type = TokenType::STD_OUT;
+                i++;
             }
 
             state = State::Collect;

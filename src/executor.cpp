@@ -1,7 +1,11 @@
 #include "executor.hpp"
 #include "lexer.hpp"
 #include "utils.hpp"
+#include "redirection.hpp"
 #include "style.cpp"
+
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <unistd.h>
 #include <csignal>
@@ -24,9 +28,13 @@ void run_external(const std::string &command)
         // Child process
         signal(SIGINT, SIG_DFL);
 
-        std::vector<char *> argv;
-
+        int saved_stdout;
+        int saved_stderr;
         vector<Token> tokens = tokenize(command);
+
+        if (!applyRedirections(tokens, saved_stdout, saved_stderr))
+            _exit(1);
+        std::vector<char *> argv;
 
         for (auto it = tokens.begin(); it != tokens.end(); it++)
         {
