@@ -31,35 +31,39 @@ void run_external(const std::string &command)
         int saved_stdout;
         int saved_stderr;
         vector<Token> tokens = tokenize(command);
-
-        if (!applyRedirections(tokens, saved_stdout, saved_stderr))
-            _exit(1);
-        std::vector<char *> argv;
-
-        for (auto it = tokens.begin(); it != tokens.end(); it++)
+        for (const auto &token : tokens)
         {
-            if (it->type == TokenType::WORD)
-            {
-                argv.push_back(const_cast<char *>(it->value.c_str()));
-            }
+            cout << "TYPE: " << static_cast<int>(token.type)
+                 << " VALUE: [" << token.value << "]\n";
         }
+        // if (!applyRedirections(tokens, saved_stdout, saved_stderr))
+        //     _exit(1);
+        // std::vector<char *> argv;
 
-        argv.push_back(nullptr);
-        // for (auto &it : argv)
-        //     cout << ERROR << it << RESET << endl;
+        // for (auto it = tokens.begin(); it != tokens.end(); it++)
+        // {
+        //     if (it->type == TokenType::WORD)
+        //     {
+        //         argv.push_back(const_cast<char *>(it->value.c_str()));
+        //     }
+        // }
 
-        string path = checkCMD(argv[0]);
+        // argv.push_back(nullptr);
+        // // for (auto &it : argv)
+        //     // cout << ERROR << it << RESET << endl;
 
-        if (path.empty())
-        {
-            cout << argv[0] << ERROR << ": command not found" << RESET << endl;
-            exit(EXIT_FAILURE);
-        }
+        // string path = checkCMD(argv[0]);
 
-        execv(path.c_str(), argv.data());
+        // if (path.empty())
+        // {
+        //     cout << argv[0] << ERROR << ": command not found" << RESET << endl;
+        //     exit(EXIT_FAILURE);
+        // }
 
-        perror("execv");
-        exit(EXIT_FAILURE);
+        // execv(path.c_str(), argv.data());
+
+        // perror("execv");
+        // exit(EXIT_FAILURE);
     }
 
     // Parent process
