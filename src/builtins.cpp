@@ -61,7 +61,7 @@ void echoCommand(const string &args)
         }
     }
 
-    cout << GREEN << content << endl;
+    cout <<content << endl;
 }
 
 // Built-in: pwd

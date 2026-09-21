@@ -1,7 +1,11 @@
-g++ main.cpp lexer.cpp executor.cpp utils.cpp builtins.cpp style.cpp -o main
+g++ main.cpp lexer.cpp executor.cpp utils.cpp builtins.cpp style.cpp redirection.cpp -o main
 
 
 
 echo '/tmp/pig/f   55' '/tmp/pig/f   22' '/tmp/pig/f   19'
 
 cat '/tmp/pig/f   55' '/tmp/pig/f   22' '/tmp/pig/f   19'
+
+echo Hello Emily >> /tmp/fox/cow.md
+
+echo Hello Emily > /tmp/fox/cow.md
