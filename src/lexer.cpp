@@ -112,19 +112,31 @@ vector<Token> tokenize(const string &cmd)
                 }
             }
 
-            else if (ch == '>' && next_ch == '>')
+            else if (ch == '1' && next_ch == '>')
             {
-                curr_token.type = TokenType::STD_OUT_APPEND;
-                i++;
+
+                if (i + 2 < cmd.length() && cmd[i + 2] == '>')
+                {
+                    curr_token.type = TokenType::STD_OUT_APPEND;
+                    i += 2;
+                }
+                else
+                {
+                    curr_token.type = TokenType::STD_OUT;
+                    i++;
+                }
             }
             else if (ch == '>')
             {
-                curr_token.type = TokenType::STD_OUT;
-            }
-            else if (ch == '1' && next_ch == '>')
-            {
-                curr_token.type = TokenType::STD_OUT;
-                i++;
+                if (next_ch == '>')
+                {
+                    curr_token.type = TokenType::STD_OUT_APPEND;
+                    i++;
+                }
+                else
+                {
+                    curr_token.type = TokenType::STD_OUT;
+                }
             }
 
             state = State::Collect;
