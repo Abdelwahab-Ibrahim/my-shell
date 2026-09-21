@@ -1,9 +1,21 @@
 #include "utils.hpp"
+#include "lexer.hpp"
 #include <sstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+
 #include <unistd.h>
 using namespace std;
+
+bool hasPipe(const vector<Token> &tokens)
+{
+    return find_if(tokens.begin(), tokens.end(),
+                   [](const Token &token)
+                   {
+                       return token.type == TokenType::PIPE;
+                   }) != tokens.end();
+}
 
 pair<string, string> parseCommand(const string &input)
 {

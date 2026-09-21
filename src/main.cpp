@@ -14,17 +14,47 @@ int main()
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
-
   bool running = true;
   while (running)
   {
     std::cout << "$ ";
     string command;
     std::getline(std::cin, command);
-    vector<Token> tokens = tokenize(command);
-    if (tokens.empty() || tokens[0].type != TokenType::WORD)
+    vector<Token> commands = tokenize(command);
+    if (commands.empty() || commands[0].type != TokenType::WORD)
       continue;
 
-    execute_cmd(tokens, running);
+    if (hasPipe(commands))
+    {
+      vector<vector<Token>> commandGroups;
+      vector<Token> currentCommand;
+
+      for (const Token &token : commands)
+      {
+        if (token.type == TokenType::PIPE)
+        {
+          if (!currentCommand.empty())
+          {
+            commandGroups.push_back(currentCommand);
+            currentCommand.clear();
+          }
+        }
+        else
+        {
+          currentCommand.push_back(token);
+        }
+      }
+
+      if (!currentCommand.empty())
+      {
+        commandGroups.push_back(currentCommand);
+      }
+
+      runPipeline(commandGroups);
+    }
+    else
+    {
+      execute_cmd(commands, running);
+    }
   }
 }
