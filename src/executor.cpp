@@ -29,14 +29,14 @@ void run_external(const vector<Token> &tokens)
         // Child process
         signal(SIGINT, SIG_DFL);
 
+        
+                // for (const auto &token : tokens)
+                // {
+                //     cout << "TYPE: " << static_cast<int>(token.type)
+                //          << " VALUE: [" << token.value << "]\n";
+                // }
         int saved_stdout;
         int saved_stderr;
-
-        // for (const auto &token : tokens)
-        // {
-        //     cout << "TYPE: " << static_cast<int>(token.type)
-        //          << " VALUE: [" << token.value << "]\n";
-        // }
         if (!applyRedirections(tokens, saved_stdout, saved_stderr))
             _exit(1);
         std::vector<char *> argv;
